@@ -6,7 +6,7 @@
 /*   By: diodos-s <diodos-s@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/10 13:21:36 by diodos-s          #+#    #+#             */
-/*   Updated: 2023/05/10 15:58:59 by diodos-s         ###   ########.fr       */
+/*   Updated: 2023/05/11 17:05:31 by diodos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,26 @@
 
 char    read_and_stash(int fd, char *stash)
 {
-    char    *buff;
+    char    *buf;
     int     bytes_read;
 
-    buff = malloc(sizeof (char) * (BUFFER_SIZE + 1));
-    if (!buff)
+    buf = malloc(sizeof (char) * (BUFFER_SIZE + 1));
+    if (!buf)
         return (NULL);
     bytes_read = 1;
     while (!found_new_line(*stash) && bytes_read != 0)
     {
-        bytes_read = read(fd, buff, BUFFER_SIZE);
+        bytes_read = read(fd, buf, BUFFER_SIZE);
         if (bytes_read = -1)
         {
-            free(buff);
+            free(buf);
             return (NULL);
         }
-        buff[bytes_read] = '\0';
+        buf[bytes_read] = '\0';
+        stash = add_to_stash(stash, buf);
     }
+    free(buf);
+    return (stash);
 }
 
 char    *get_next_line(int fd)
@@ -45,5 +48,6 @@ char    *get_next_line(int fd)
     read_and_stash(fd, &stash);
     if (!stash)
         return (NULL);
+    extract_line(stash, &line);
     return (line);
 }
